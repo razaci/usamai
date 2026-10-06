@@ -4,54 +4,103 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Video Player</title>
+<title>AVI Video Player</title>
 
 <style>
 *{box-sizing:border-box}
+
 body{
   margin:0;
   min-height:100vh;
-  background:radial-gradient(circle at top,#16344b,#050a10 55%,#000);
-  color:white;
-  font-family:Arial,sans-serif;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:15px;
+  background:
+    radial-gradient(circle at top,#12364c 0,#06131d 40%,#010406 100%);
+  color:#fff;
+  font-family:Arial,Helvetica,sans-serif;
+  padding:16px;
 }
-.app{width:min(1100px,100%)}
+
+.app{
+  width:min(1100px,100%);
+  margin:auto;
+}
 
 h1{
-  margin:0 0 12px;
-  font-size:clamp(22px,5vw,38px);
+  margin:5px 0;
+  color:#63e4ff;
   letter-spacing:3px;
-  color:#73e7ff;
 }
 
-.player{
+.sub{
+  color:#8baeba;
+  margin:0 0 15px;
+}
+
+.screen{
   background:#000;
-  border:1px solid #32708e;
-  border-radius:18px;
+  border:1px solid #27617c;
+  border-radius:16px;
   overflow:hidden;
-  box-shadow:0 0 40px #008cff33;
+  box-shadow:0 0 40px #009dff22;
 }
 
 video{
   display:block;
   width:100%;
+  min-height:250px;
   max-height:70vh;
   background:#000;
 }
 
-.controls{
-  padding:14px;
-  background:#08141d;
+.openArea{
+  padding:16px;
+  background:#091721;
+  border-top:1px solid #1c4357;
 }
 
-.progress{
+.fileButton{
+  display:block;
   width:100%;
-  margin-bottom:12px;
-  accent-color:#40dfff;
+  padding:18px;
+  border:1px solid #3bdcff;
+  border-radius:12px;
+  background:linear-gradient(#16445a,#0c2837);
+  color:#fff;
+  font-size:18px;
+  font-weight:900;
+  letter-spacing:1px;
+  text-align:center;
+  cursor:pointer;
+}
+
+.fileButton:hover{
+  background:#15526c;
+}
+
+#fileInput{
+  display:none;
+}
+
+.filename{
+  padding:12px 0 3px;
+  color:#69e6ff;
+  font-family:monospace;
+  overflow-wrap:anywhere;
+}
+
+.controls{
+  padding:14px;
+  background:#07121a;
+}
+
+#seek{
+  width:100%;
+  accent-color:#42ddff;
+}
+
+.time{
+  font-family:monospace;
+  color:#8ceaff;
+  padding:8px 2px;
 }
 
 .buttons{
@@ -61,49 +110,72 @@ video{
 }
 
 button,select{
-  min-height:46px;
+  min-height:48px;
   border-radius:9px;
-  border:1px solid #32617a;
-  background:#102b3b;
+  border:1px solid #315d72;
+  background:#102b39;
   color:white;
   font-weight:bold;
   cursor:pointer;
 }
 
-button:hover{
+button:hover,select:hover{
   background:#17506a;
+  border-color:#56ddff;
 }
 
 .bottom{
-  display:flex;
-  align-items:center;
-  gap:12px;
+  display:grid;
+  grid-template-columns:1fr 150px;
+  gap:10px;
   margin-top:10px;
 }
 
+.volume{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:0 10px;
+  border:1px solid #234657;
+  border-radius:9px;
+}
+
 #volume{
-  flex:1;
-  accent-color:#40dfff;
+  width:100%;
+  accent-color:#42ddff;
 }
 
-.time{
-  color:#8ceaff;
-  font-family:monospace;
-  white-space:nowrap;
+.message{
+  margin-top:14px;
+  padding:14px;
+  border:1px solid #214558;
+  border-radius:12px;
+  background:#07131b;
+  color:#a9c9d5;
+  line-height:1.5;
 }
 
-.notice{
-  margin-top:12px;
+.message strong{
+  color:#61e5ff;
+}
+
+#error{
+  display:none;
+  color:#ffaaaa;
+  margin-top:10px;
   padding:12px;
-  border:1px solid #21485d;
-  border-radius:10px;
-  background:#07121a;
-  color:#a9c9d8;
+  background:#351015;
+  border-radius:8px;
 }
 
 @media(max-width:700px){
-  .buttons{grid-template-columns:repeat(2,1fr)}
-  .bottom{flex-wrap:wrap}
+  .buttons{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .bottom{
+    grid-template-columns:1fr;
+  }
 }
 </style>
 </head>
@@ -112,55 +184,84 @@ button:hover{
 
 <div class="app">
 
-<h1>VIDEO COMMAND</h1>
+<h1>AVI VIDEO DECK</h1>
 
-<div class="player">
+<p class="sub">
+Select the video yourself, then play it.
+</p>
 
-<video id="video" playsinline preload="metadata">
-  <source src="./main-video.avi" type="video/x-msvideo">
-  Your browser cannot play this video.
+<div class="screen">
+
+<video
+  id="video"
+  controls
+  playsinline
+  preload="metadata">
 </video>
+
+<div class="openArea">
+
+<label class="fileButton" for="fileInput">
+📂 OPEN AVI VIDEO
+</label>
+
+<input
+  id="fileInput"
+  type="file"
+  accept=".avi,video/x-msvideo,video/*">
+
+<div class="filename" id="filename">
+NO VIDEO SELECTED
+</div>
+
+<div id="error"></div>
+
+</div>
 
 <div class="controls">
 
 <input
-  id="progress"
-  class="progress"
+  id="seek"
   type="range"
   min="0"
-  max="100"
-  value="0"
->
+  max="1000"
+  value="0">
+
+<div class="time" id="time">
+0:00 / 0:00
+</div>
 
 <div class="buttons">
 
-<button onclick="togglePlay()" id="play">
+<button id="play">
 ▶ PLAY
 </button>
 
-<button onclick="skip(-10)">
+<button id="back">
 ↶ 10 SEC
 </button>
 
-<button onclick="skip(10)">
+<button id="forward">
 10 SEC ↷
 </button>
 
-<button onclick="restartVideo()">
+<button id="restart">
 ↺ RESTART
 </button>
 
-<button onclick="toggleMute()" id="mute">
+<button id="mute">
 🔊 MUTE
 </button>
 
-<button onclick="fullscreenVideo()">
+<button id="fullscreen">
 ⛶ FULLSCREEN
 </button>
 
 </div>
 
 <div class="bottom">
+
+<div class="volume">
 
 <span>🔊</span>
 
@@ -170,179 +271,532 @@ button:hover{
   min="0"
   max="1"
   step=".01"
-  value="1"
->
+  value="1">
+
+</div>
 
 <select id="speed">
-<option value=".5">0.5×</option>
-<option value=".75">0.75×</option>
-<option value="1" selected>1×</option>
-<option value="1.25">1.25×</option>
-<option value="1.5">1.5×</option>
-<option value="2">2×</option>
+<option value=".5">0.5× SPEED</option>
+<option value=".75">0.75× SPEED</option>
+<option value="1" selected>1× SPEED</option>
+<option value="1.25">1.25× SPEED</option>
+<option value="1.5">1.5× SPEED</option>
+<option value="2">2× SPEED</option>
 </select>
 
-<span class="time" id="time">
-0:00 / 0:00
-</span>
-
 </div>
 
 </div>
 </div>
 
-<div class="notice">
-FILE: <strong>main-video.avi</strong><br>
-Place this file directly beside <strong>index.html</strong>.
+<div class="message">
+
+<strong>HOW THIS VERSION WORKS</strong><br><br>
+
+1. Open this page.<br>
+2. Press <strong>OPEN AVI VIDEO</strong>.<br>
+3. Select <strong>main-video.avi</strong>.<br>
+4. Press Play.<br><br>
+
+The page does not need to guess where your AVI is located.
+You select the actual file yourself.
+
 </div>
 
 </div>
 
 <script>
 
-const video = document.getElementById("video");
-const play = document.getElementById("play");
-const mute = document.getElementById("mute");
-const progress = document.getElementById("progress");
-const volume = document.getElementById("volume");
-const speed = document.getElementById("speed");
-const time = document.getElementById("time");
+const video =
+  document.getElementById("video");
+
+const fileInput =
+  document.getElementById("fileInput");
+
+const filename =
+  document.getElementById("filename");
+
+const error =
+  document.getElementById("error");
+
+const seek =
+  document.getElementById("seek");
+
+const time =
+  document.getElementById("time");
+
+const play =
+  document.getElementById("play");
+
+const volume =
+  document.getElementById("volume");
+
+const speed =
+  document.getElementById("speed");
+
+const mute =
+  document.getElementById("mute");
+
+let currentURL = null;
+
+
+/* ===============================
+   OPEN LOCAL VIDEO
+================================ */
+
+fileInput.addEventListener(
+  "change",
+  function(){
+
+    const file =
+      fileInput.files[0];
+
+    if(!file) return;
+
+
+    error.style.display =
+      "none";
+
+
+    filename.textContent =
+      "LOADED: " + file.name;
+
+
+    /*
+      Remove previous temporary URL
+    */
+
+    if(currentURL){
+
+      URL.revokeObjectURL(
+        currentURL
+      );
+
+    }
+
+
+    /*
+      Create browser-accessible URL
+      directly from selected file.
+    */
+
+    currentURL =
+      URL.createObjectURL(file);
+
+
+    video.src =
+      currentURL;
+
+
+    video.load();
+
+
+    /*
+      Try playing after user selected
+      the file.
+    */
+
+    video.play()
+      .catch(()=>{
+
+        /*
+          That's okay.
+          User can press PLAY.
+        */
+
+      });
+
+  }
+);
+
+
+/* ===============================
+   PLAY / PAUSE
+================================ */
 
 function togglePlay(){
 
+  if(!video.src){
+
+    fileInput.click();
+    return;
+
+  }
+
+
   if(video.paused){
-    video.play();
+
+    video.play()
+      .catch(()=>{
+
+        showCodecError();
+
+      });
+
   }else{
+
     video.pause();
+
   }
 
 }
 
-video.addEventListener("play",()=>{
-  play.innerHTML="❚❚ PAUSE";
-});
 
-video.addEventListener("pause",()=>{
-  play.innerHTML="▶ PLAY";
-});
+play.onclick =
+  togglePlay;
 
-video.addEventListener("click",togglePlay);
 
-function skip(seconds){
+video.addEventListener(
+  "play",
+  ()=>{
+
+    play.textContent =
+      "❚❚ PAUSE";
+
+  }
+);
+
+
+video.addEventListener(
+  "pause",
+  ()=>{
+
+    play.textContent =
+      "▶ PLAY";
+
+  }
+);
+
+
+/* ===============================
+   SKIP
+================================ */
+
+document.getElementById(
+  "back"
+).onclick = ()=>{
 
   video.currentTime =
     Math.max(
       0,
-      Math.min(
-        video.duration || Infinity,
-        video.currentTime + seconds
-      )
+      video.currentTime - 10
     );
 
-}
+};
 
-function restartVideo(){
 
-  video.currentTime=0;
-  video.play();
+document.getElementById(
+  "forward"
+).onclick = ()=>{
 
-}
+  video.currentTime =
+    Math.min(
+      video.duration || Infinity,
+      video.currentTime + 10
+    );
 
-function toggleMute(){
+};
 
-  video.muted=!video.muted;
 
-  mute.innerHTML=
+/* ===============================
+   RESTART
+================================ */
+
+document.getElementById(
+  "restart"
+).onclick = ()=>{
+
+  video.currentTime = 0;
+
+  video.play()
+    .catch(()=>{});
+
+};
+
+
+/* ===============================
+   SEEK BAR
+================================ */
+
+seek.addEventListener(
+  "input",
+  ()=>{
+
+    if(
+      !Number.isFinite(
+        video.duration
+      )
+    ) return;
+
+
+    video.currentTime =
+      (
+        Number(seek.value)
+        / 1000
+      )
+      * video.duration;
+
+  }
+);
+
+
+video.addEventListener(
+  "timeupdate",
+  ()=>{
+
+    if(
+      Number.isFinite(
+        video.duration
+      )
+    ){
+
+      seek.value =
+        (
+          video.currentTime
+          / video.duration
+        )
+        * 1000;
+
+    }
+
+
+    time.textContent =
+      formatTime(
+        video.currentTime
+      )
+      +
+      " / "
+      +
+      formatTime(
+        video.duration
+      );
+
+  }
+);
+
+
+/* ===============================
+   VOLUME
+================================ */
+
+volume.addEventListener(
+  "input",
+  ()=>{
+
+    video.volume =
+      Number(
+        volume.value
+      );
+
+    if(video.volume > 0){
+
+      video.muted =
+        false;
+
+    }
+
+  }
+);
+
+
+mute.onclick = ()=>{
+
+  video.muted =
+    !video.muted;
+
+
+  mute.textContent =
     video.muted
-    ?"🔇 UNMUTE"
-    :"🔊 MUTE";
+      ? "🔇 UNMUTE"
+      : "🔊 MUTE";
+
+};
+
+
+/* ===============================
+   SPEED
+================================ */
+
+speed.addEventListener(
+  "change",
+  ()=>{
+
+    video.playbackRate =
+      Number(
+        speed.value
+      );
+
+  }
+);
+
+
+/* ===============================
+   FULLSCREEN
+================================ */
+
+document.getElementById(
+  "fullscreen"
+).onclick =
+async ()=>{
+
+  try{
+
+    if(
+      video.requestFullscreen
+    ){
+
+      await video
+        .requestFullscreen();
+
+    }
+
+    else if(
+      video.webkitEnterFullscreen
+    ){
+
+      video
+        .webkitEnterFullscreen();
+
+    }
+
+  }catch(e){}
+
+};
+
+
+/* ===============================
+   VIDEO ERRORS
+================================ */
+
+video.addEventListener(
+  "error",
+  ()=>{
+
+    showCodecError();
+
+  }
+);
+
+
+function showCodecError(){
+
+  error.style.display =
+    "block";
+
+  error.innerHTML =
+    "<strong>THE FILE WAS FOUND.</strong><br><br>" +
+    "If the AVI still will not play, " +
+    "the browser does not understand " +
+    "the video/audio codec stored inside " +
+    "this AVI file.";
 
 }
 
-volume.addEventListener("input",()=>{
 
-  video.volume=volume.value;
+/* ===============================
+   FORMAT TIME
+================================ */
 
-});
+function formatTime(seconds){
 
-speed.addEventListener("change",()=>{
+  if(
+    !Number.isFinite(seconds)
+  ){
 
-  video.playbackRate=speed.value;
-
-});
-
-progress.addEventListener("input",()=>{
-
-  if(video.duration){
-
-    video.currentTime=
-      (progress.value/100)*video.duration;
+    return "0:00";
 
   }
 
-});
 
-video.addEventListener("timeupdate",()=>{
+  const hours =
+    Math.floor(
+      seconds / 3600
+    );
 
-  if(video.duration){
 
-    progress.value=
-      (video.currentTime/video.duration)*100;
+  const minutes =
+    Math.floor(
+      (seconds % 3600) / 60
+    );
 
-  }
 
-  time.innerHTML=
-    format(video.currentTime)
-    +" / "+
-    format(video.duration);
-
-});
-
-function format(sec){
-
-  if(!isFinite(sec)) return "0:00";
-
-  let minutes=Math.floor(sec/60);
-
-  let seconds=Math.floor(sec%60)
+  const secs =
+    Math.floor(
+      seconds % 60
+    )
     .toString()
     .padStart(2,"0");
 
-  return minutes+":"+seconds;
+
+  if(hours > 0){
+
+    return (
+      hours +
+      ":" +
+      minutes
+        .toString()
+        .padStart(2,"0") +
+      ":" +
+      secs
+    );
+
+  }
+
+
+  return (
+    minutes +
+    ":" +
+    secs
+  );
 
 }
 
-function fullscreenVideo(){
 
-  if(video.requestFullscreen){
-    video.requestFullscreen();
+/* ===============================
+   KEYBOARD
+================================ */
+
+document.addEventListener(
+  "keydown",
+  e=>{
+
+    if(e.code === "Space"){
+
+      e.preventDefault();
+
+      togglePlay();
+
+    }
+
+
+    if(
+      e.code ===
+      "ArrowLeft"
+    ){
+
+      video.currentTime =
+        Math.max(
+          0,
+          video.currentTime - 10
+        );
+
+    }
+
+
+    if(
+      e.code ===
+      "ArrowRight"
+    ){
+
+      video.currentTime =
+        video.currentTime + 10;
+
+    }
+
   }
-
-  else if(video.webkitEnterFullscreen){
-    video.webkitEnterFullscreen();
-  }
-
-}
-
-document.addEventListener("keydown",(e)=>{
-
-  if(e.code==="Space"){
-    e.preventDefault();
-    togglePlay();
-  }
-
-  if(e.code==="ArrowRight"){
-    skip(10);
-  }
-
-  if(e.code==="ArrowLeft"){
-    skip(-10);
-  }
-
-});
+);
 
 </script>
 
 </body>
 </html>
-```
